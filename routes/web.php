@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
+use GuzzleHttp\Client;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,32 +24,31 @@ Route::get('/books', function() {
 
 Route::post('/books', function(Request $request) {
 
-    $client = new GuzzleHttp\Client();
+    $client = new Client(['base_uri' => 'https://www.googleapis.com/books/v1/',
+        'verify' => "C:/wamp64/bin/php/php5.6.25/extras/ssl/cacert.pem" ]);
 
-    if(isset($request['isbn'])) {
+    $client->getConfig('config/curl/' . CURLOPT_SSL_VERIFYPEER, false);
+
+    if(isset($request['isbn']) || isset($request['bookName'])) {
 
         if(strlen($request['isbn']) >0) {
 
-            $res = $client->request('GET', 'https://www.googleapis.com/books/v1/volumes?q=isbn:$request["isbn"]', [
-                'auth' => ['stojan.mitric.dev@gmail.com', 'stojanovasifra35']
-            ]);
+            $response = $client->request('GET','volumes?q=isbn:' . $request['isbn']);
 
-            echo $res->getStatusCode();
-// "200"
-            echo $res->getHeader('content-type');
-// 'application/json; charset=utf8'
-            echo $res->getBody();
-// {"type":"User"...'
+            $result = (string)$response->getBody();
 
-// Send an asynchronous request.
+            echo $result;
 
-            /*$request = new \GuzzleHttp\Psr7\Request('GET', 'http://httpbin.org');
-            $promise = $client->sendAsync($request)->then(function ($response) {
-                echo 'I completed! ' . $response->getBody();
-            });
-            $promise->wait();*/
 
-        } else {
+        } else if(strlen($request['bookName']) >0){
+
+            /*$response = $client->request('GET', $request["bookName"]);
+
+            echo $response->getStatusCode();
+            echo $response->getHeader('content-type');
+            echo $response->getBody();*/
+
+        }else {
             return redirect()->back();
         }
 
