@@ -23,7 +23,9 @@
                     <input class="form-control" type="text" name="bookName" id="bookName">
 
                     <input type="hidden" value="{{Session::token()}}" name="_token">
+
                     </br>
+
                     <input class=" btn btn-primary btn-md" type="submit" value="Find book">
                 </div>
             </form>

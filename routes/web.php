@@ -31,14 +31,12 @@ Route::post('/books', function(Request $request) {
 
     if(isset($request['isbn']) || isset($request['bookName'])) {
 
-        if(strlen($request['isbn']) >0) {
+        $isbn = $request['isbn'];
+        $bookName = $request['bookName'];
 
-            $response = $client->request('GET','?q=isbn:' . $request['isbn']);
+        if(strlen($isbn) > 0) {
 
-            //$result = (string)$response->getBody();
-
-            //echo $result;
-
+            $response = $client->request('GET','?q=isbn:' . $isbn);
 
             $result = $response->getBody();
 
@@ -49,10 +47,10 @@ Route::post('/books', function(Request $request) {
 
             echo $result;
 
-            $data = json_decode($result, true);
+            echo '<br>';
+            echo '<br>';
 
-            echo '<br>';
-            echo '<br>';
+            $data = json_decode($result, true);
 
             echo "Book name is: " . $data['items'][0]["volumeInfo"]["title"];
 
@@ -65,9 +63,9 @@ Route::post('/books', function(Request $request) {
             echo "Pagecount = " . $data['items'][0]['volumeInfo']['pageCount'];
 
 
-        } else if(strlen($request['bookName']) >0){
+        } else if(strlen($bookName) > 0){
 
-            $response = $client->request('GET', '?q=intitle:'. $request["bookName"]);
+            $response = $client->request('GET', '?q=intitle:'. $bookName);
 
             $result = $response->getBody();
 
