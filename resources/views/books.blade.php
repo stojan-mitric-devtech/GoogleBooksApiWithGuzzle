@@ -1,5 +1,33 @@
-
+<html>
 <head>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <script type="text/javascript">
+
+        $(document).ready(function() {
+
+            $("#isbn").on('change', function(){
+                if($("#isbn").val().length > 0 ){
+                    $("#bookName").prop("disabled", true);
+                }
+                else {
+                    $("#bookName").prop("disabled", false);
+                }
+            });
+
+            $("#bookName").on('change', function(){
+                if($("#bookName").val().length > 0){
+                    $("#isbn").prop("disabled", true);
+                }
+                else {
+                    $("#isbn").prop("disabled", false);
+                }
+            });
+        });
+
+
+    </script>
 
 </head>
 <body>

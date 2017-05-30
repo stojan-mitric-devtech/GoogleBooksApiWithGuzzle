@@ -2,7 +2,6 @@
 
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
-
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -31,8 +30,10 @@ Route::post('/books', function(Request $request) {
 
     if(isset($request['isbn']) || isset($request['bookName'])) {
 
+
         $isbn = $request['isbn'];
         $bookName = $request['bookName'];
+
 
         if(strlen($isbn) > 0) {
 
@@ -85,4 +86,6 @@ Route::post('/books', function(Request $request) {
         return redirect()->back();
     }
 
+
 });
+
