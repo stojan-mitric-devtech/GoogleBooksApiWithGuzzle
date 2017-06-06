@@ -23,28 +23,14 @@ class BookController extends Controller {
         $this->guzzleClient->getConfig('config/curl/' . CURLOPT_SSL_VERIFYPEER, false);
     }
 
-    public function validateFields(Request $request)
-    {
-
-        if (isset($request['isbn'])) {
-
-            $this->validate($request, [
-                'isbn' => 'required|min:10|max:13'
-            ]);
-
-        } else if (isset($request['bookName'])) {
-
-            $this->validate($request, [
-                'bookName' => 'regex:/(^[A-Za-z0-9 ]+$)+/'
-            ]);
-
-        }
-    }
 
     public function searchByIsbn(Request $request)
     {
         if (isset($request['isbn'])) {
 
+            $this->validate($request, [
+                'isbn' => 'required|min:10|max:13'
+            ]);
 
             $isbn = $request['isbn'];
 
@@ -84,6 +70,11 @@ class BookController extends Controller {
     public function searchByName(Request $request)
     {
         if (isset($request['bookName'])) {
+
+            $this->validate($request, [
+                'bookName' => 'required|regex:/(^[A-Za-z0-9 ]+$)+/'
+            ]);
+
             $bookName = $request['bookName'];
 
             if (strlen($bookName) > 0) {
