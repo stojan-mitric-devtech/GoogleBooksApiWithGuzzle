@@ -13,38 +13,44 @@ use GuzzleHttp\Client;
 
 class BookController extends Controller {
 
-    public function postBook(Request $request)
+    private $guzzleClient;
+
+    public function __construct()
     {
-        if(isset($request['isbn'])) {
+        $this->guzzleClient = new Client(['base_uri' => 'https://www.googleapis.com/books/v1/volumes',
+            'verify' => "C:/wamp64/bin/php/php5.6.25/extras/ssl/cacert.pem" ]);
+
+        $this->guzzleClient->getConfig('config/curl/' . CURLOPT_SSL_VERIFYPEER, false);
+    }
+
+    public function validateFields(Request $request)
+    {
+
+        if (isset($request['isbn'])) {
 
             $this->validate($request, [
                 'isbn' => 'required|min:10|max:13'
             ]);
 
-        } else if(isset($request['bookName'])) {
+        } else if (isset($request['bookName'])) {
 
             $this->validate($request, [
                 'bookName' => 'regex:/(^[A-Za-z0-9 ]+$)+/'
             ]);
 
         }
+    }
 
-        /*
-        $client = new Client(['base_uri' => 'https://www.googleapis.com/books/v1/volumes',
-            'verify' => "C:/wamp64/bin/php/php5.6.25/extras/ssl/cacert.pem" ]);
-
-        $client->getConfig('config/curl/' . CURLOPT_SSL_VERIFYPEER, false);
-
-        if(isset($request['isbn']) || isset($request['bookName'])) {
+    public function searchByIsbn(Request $request)
+    {
+        if (isset($request['isbn'])) {
 
 
             $isbn = $request['isbn'];
-            $bookName = $request['bookName'];
 
+            if (strlen($isbn) > 0) {
 
-            if(strlen($isbn) > 0) {
-
-                $response = $client->request('GET','?q=isbn:' . $isbn);
+                $response = $this->guzzleClient->request('GET', '?q=isbn:' . $isbn);
 
                 $result = $response->getBody();
 
@@ -64,16 +70,26 @@ class BookController extends Controller {
 
                 echo '<br>';
 
-                echo "Book authors are: " . @implode(",",  $data['items'][0]["volumeInfo"]["authors"]);
+                echo "Book authors are: " . @implode(",", $data['items'][0]["volumeInfo"]["authors"]);
 
                 echo '<br>';
 
                 echo "Pagecount = " . $data['items'][0]['volumeInfo']['pageCount'];
+            }
+        } else {
+            return redirect()->back();
+        }
+    }
+
+    public function searchByName(Request $request)
+    {
+        if (isset($request['bookName'])) {
+            $bookName = $request['bookName'];
+
+            if (strlen($bookName) > 0) {
 
 
-            } else if(strlen($bookName) > 0){
-
-                $response = $client->request('GET', '?q=intitle:'. $bookName);
+                $response = $this->guzzleClient->request('GET', '?q=intitle:' . $bookName);
 
                 $result = $response->getBody();
 
@@ -83,17 +99,10 @@ class BookController extends Controller {
                 echo '<br>';
 
                 echo $result;
-
-
-            }else {
-                return redirect()->back();
             }
-
         } else {
             return redirect()->back();
         }
-        */
-
     }
 
 }
