@@ -14,3 +14,15 @@
 $app->get('/', function () use ($app) {
     return $app->version();
 });
+
+$app->get('/booksIsbn', function () use ($app) {
+    return $app->version();
+});
+
+$app->get('/booksName', function () use ($app) {
+    return $app->version();
+});
+
+$app->post('/booksIsbn', 'BookController@searchByIsbn');
+
+$app->post('/booksName', 'BookController@searchByName');
