@@ -10,15 +10,18 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
+use App\Providers\StojansResponse;
 
 class BookController extends Controller {
 
     private $guzzleClient;
+    private $stojansResponse;
 
     public function __construct()
     {
-        $this->guzzleClient = new Client(['base_uri' => env('GUZZLE_URL'), 'verify' => env('GUZZLE_SSL_LOCAL')]);
-        $this->guzzleClient->getConfig('config/curl/' . CURLOPT_SSL_VERIFYPEER, false);
+        $this->guzzleClient = new Client(['base_uri' => env('GUZZLE_URL')]);
+
+        $this->stojansResponse = new StojansResponse();
     }
 
 
@@ -32,13 +35,18 @@ class BookController extends Controller {
 
             $response = $this->guzzleClient->request('GET', '?q=isbn:' . $isbn);
 
-            header('Content-Type: application/json');
+            $statusCode = $response->getStatusCode();
 
             $resp = $response->getBody();
 
             $result = (string) $resp;
 
-            echo json_encode($result, JSON_PRETTY_PRINT);
+            if($statusCode != 400 || $statusCode != 500) {
+                $this->stojansResponse->onSuccess($result);
+            } else {
+                $this->stojansResponse->onFailure($statusCode);
+            }
+
     }
 
 
@@ -54,13 +62,17 @@ class BookController extends Controller {
 
             $response = $this->guzzleClient->request('GET', '?q=intitle:' . $bookName);
 
-            header('Content-Type: application/json');
+            $statusCode = $response->getStatusCode();
 
             $resp = $response->getBody();
 
             $result = (string) $resp;
 
-            echo json_encode($result, JSON_PRETTY_PRINT);
+            if($statusCode != 400 || $statusCode != 500) {
+                $this->stojansResponse->onSuccess($result);
+            } else {
+                $this->stojansResponse->onFailure($statusCode);
+            }
 
     }
 
